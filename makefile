@@ -1,16 +1,30 @@
-browser:
-	./node_modules/.bin/browserify ./sift.js -o ./sift.browser.js
-	
-clean:
-	rm -rf test-web;
-
+REPORTER=dot
+ONLY="."
+TESTS=./test
+TIMEOUT=100
 
 min: 
-	closure-compiler --js ./sift.js --js_output_file ./sift.min.js
+	./node_modules/.bin/uglifyjs ./sift.js -m -c > ./sift.min.js
 
+test-node:
+	./node_modules/.bin/mocha $(TESTS) -g $(ONLY) --reporter $(REPORTER) --bail
 
-test-web:
-	rm -rf test-web;
-	cp -r test test-web;
-	for F in `ls test-web | grep test`; do ./node_modules/.bin/sardines "test-web/$$F" -o "test-web/$$F" -p browser; done
+test-watch:
+	./node_modules/.bin/mocha $(TESTS) -g $(ONLY) --reporter $(REPORTER) --bail --watch sift.js
 
+lint: jshint jscs
+	
+jshint:
+	./node_modules/.bin/jshint -c ./.jshint sift.js
+
+jscs:
+	./node_modules/.bin/jscs sift.js;
+
+test-cov:
+	PC_DEBUG=1 ./node_modules/.bin/istanbul cover \
+	./node_modules/.bin/_mocha $(TESTS) -- --timeout $(TIMEOUT) --reporter $(REPORTER)
+
+test-coveralls:
+	PC_DEBUG=1 ./node_modules/.bin/istanbul cover \
+	./node_modules/.bin/_mocha $(TESTS) -- --timeout $(TIMEOUT) --reporter $(REPORTER)  && \
+	cat ./coverage/lcov.info | ./node_modules/.bin/coveralls --verbose

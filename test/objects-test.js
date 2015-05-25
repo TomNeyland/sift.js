@@ -1,10 +1,8 @@
-var _ = require('underscore'),
-    expect = require("expect.js"),
-    sift = require(".."),
+var sift = require(".."),
     assert = require("assert");
 
 
-describe("objects", function () {
+describe(__filename + "#", function () {
 
     var topic = [
         {
@@ -114,6 +112,7 @@ describe("objects", function () {
                 }
             }
         }, topic);
+
         assert.equal(sifted.length, 2);
     });
     it("has sifted to complex count of 0", function () {
@@ -175,12 +174,29 @@ describe("objects", function () {
             });
         });
 
-        it("$neq for nested object", function () {
+        it("$ne for nested object", function () {
             var sifted = sift({'sub.num': {'$ne': 10}}, loremArr);
             assert(sifted.length > 0);
             sifted.forEach(function (v) {
                 assert.notEqual(10, v.sub.num);
             });
+        });
+    });
+
+    describe("keypath", function () {
+
+        var arr = [
+            {
+                a: {
+                    b: {
+                        c: 1,
+                        c2: 1
+                    }
+                }
+            }
+        ]
+        it("can be used", function () {
+            assert.equal(sift({"a.b.c":1})(arr[0]), true);
         });
     });
 });

@@ -1,10 +1,11 @@
-## MongoDB inspired array filtering [![Build Status](https://secure.travis-ci.org/crcn/sift.js.png)](https://secure.travis-ci.org/crcn/sift.js)
+## MongoDB inspired array filtering 
+[![Build Status](https://secure.travis-ci.org/crcn/sift.js.png)](https://secure.travis-ci.org/crcn/sift.js) [![Coverage Status](https://coveralls.io/repos/crcn/sift.js/badge.svg)](https://coveralls.io/r/crcn/sift.js) [![Join the chat at https://gitter.im/crcn/sift.js](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/crcn/sift.js?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-For extended documentation, checkout http://docs.mongodb.org/manual/reference/operator/query/
+**For extended documentation, checkout http://docs.mongodb.org/manual/reference/operator/query/**
 
 ## Features:
 
-- Supported operators: [$in](#in), [$nin](#nin), [$exists](#exists), [$gte](#gte), [$gt](#gt), [$lte](#lte), [$lt](#lt), [$eq](#eq), [$neq](#neq), [$mod](#mod), [$all](#all), [$and](#and), [$or](#or), [$nor](#nor), [$not](#not), [$size](#size), [$type](#type), [$regex](#regex)
+- Supported operators: [$in](#in), [$nin](#nin), [$exists](#exists), [$gte](#gte), [$gt](#gt), [$lte](#lte), [$lt](#lt), [$eq](#eq), [$ne](#ne), [$mod](#mod), [$all](#all), [$and](#and), [$or](#or), [$nor](#nor), [$not](#not), [$size](#size), [$type](#type), [$regex](#regex), [$where](#where)
 - Regexp searches
 - Function filtering
 - sub object searching
@@ -201,7 +202,7 @@ sift({ $lt: 2 }, [0, 1, 2, 3]);
 
 ### $eq
 
-Checks if query == value. Note that **$eq can be omitted**. For **$eq**, and **$neq**
+Checks if query == value. Note that **$eq can be omitted**. For **$eq**, and **$ne**
 
 ```javascript
 //filtered: [{ state: 'MN' }]
@@ -306,6 +307,19 @@ Matches values based on the given regular expression
 
 ```javascript
 sift({ $regex: /^f/i, $nin: ["frank"] }, ["frank", "fred", "sam", "frost"]); // ["fred", "frost"]
+```
+
+### $where
+
+Matches based on some javascript comparison
+
+```javascript
+sift({ $where: "this.name === 'frank'" }, [{name:'frank'},{name:'joe'}]); // ["frank"]
+sift({ 
+	$where: function() { 
+		return this.name === "frank"
+	}
+}, [{name:'frank'},{name:'joe'}]); // ["frank"]
 ```
 
 ### $not
